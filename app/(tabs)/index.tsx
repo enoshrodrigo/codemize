@@ -1,8 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
- 
+import { Text, View } from '@/components/Themed'; 
 import MultipleChoices from '../MainPages/MultipleChoices';
 
 export default function TabOneScreen() {
@@ -15,8 +14,7 @@ export default function TabOneScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-   
+    flex: 1, 
   },
   title: {
     fontSize: 20,
