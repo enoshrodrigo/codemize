@@ -19,6 +19,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const socket = io("http://192.168.1.4:5000/", {
   transports: ["websocket"],
+  
 });
 
 export default function MultipleChoices() {
@@ -33,45 +34,51 @@ export default function MultipleChoices() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tempTimer, setTempTimer] = useState(0);
-const [message, setMessage] = useState('System Offline')
+  const [message, setMessage] = useState('System Offline')
 
   const onLoad = async() => {
- Question?.length <= 0 ? (
+  console.log('onload',Question.length)
+ 
+
     await axios.post('http://192.168.1.4:5000/api/question/refresh').then((res) => {
       setRefreshing(false);
       setIsGameOnline(res.data.isGameOnline) ,
       res.data.isGameOnline
           ? ( 
             console.log('refreshing game online'),
-            //console.log(Question),
+             Question?.length <= 0 ? (
            
+            //console.log(Question),
+              setSelectNumber(0),
               console.log('refreshing question'),
               setQuestion(Array(res.data.question[0])) ,
               setTemp(res.data.question),
               setTimer(res.data.time ? res.data.time : 0),
               setTempTimer(res.data.time ? res.data.time : 0)
-
-           
-            
-            
+      ) : ''
           )
           : (
+      console.log('refreshing game offline'),
       setIsGameOnline(false)  ,
+      setSelectNumber(0),
       setTimer(0),  
       setMessage(res.data.message ? res.data.message : 'System Offline'),
-      setRefreshing(false)
+      setRefreshing(false),
+      setQuestion([]) ,
+      setTemp([])
        )
       }).catch((err) =>
          {
+
         console.log(err);
-        setRefreshing(true);
+        setRefreshing(false);
       }
     )
-    ) : ''
+   
 
   }
   const onRefresh = async() => {
-    setSelectedChoice(null);
+    setSelectedChoice(null); 
     
     setRefreshing(true);
      await onLoad();
@@ -89,25 +96,44 @@ const [message, setMessage] = useState('System Offline')
             setTimer(data.time ? data.time : 0),
             setTempTimer(data.time ? data.time : 0), 
             setDisabled(false))
-          :( setIsGameOnline(false)  ,setTimer(0), setTempTimer(0),setMessage(data.message ? data.message : 'System Offline', ),setQuestion([]));
+          :( setIsGameOnline(false)  ,setTimer(0), setTempTimer(0),setMessage(data.message ? data.message : 'System Offline', ),setQuestion([]),setTemp([]), setSelectNumber(0));
   }
 
   const question = (e) => {
     intilizeData(e); 
   };
-
   useEffect(() => {
-    socket.on("connect", () => console.log("Connected to server"));
+    socket.on("connect", ()=>
+      {
+        console.log('Onload socket')
+       
+        onLoad();
+      }
+    );
     socket.on("connect_error", (error) => console.log("Connection error:", error));
-    socket.on("question", question);
-console.log('timer',timer)  
- onLoad();
-    if (timer > 0) {
+    socket.on("question", (e)=>
+      {
+        console.log('Question socket' )
+        question(e);
+      }
+    ); 
 
+    return () => {
+      socket.off("connect", onLoad);
+      socket.off("connect_error");
+      socket.off("question", question);
+    };
+  }, []);
+  useEffect(() => {
+      console.log('timer',timer)  
+      
+
+    if (timer > 0) {
+      console.log('timer 2nd ',timer) 
       const countdown = setTimeout(() => setTimer(timer - 1), 1000);
       return () => clearTimeout(countdown);
     } else {
-      setDisabled(true);
+     
       setSelectedChoice(null);
       if (selectNumber <= temp.length - 2) {
         setDisabled(false);
@@ -115,14 +141,15 @@ console.log('timer',timer)
         setSelectNumber(selectNumber + 1);
         setTimer(tempTimer);
       }
+      console.log('selectNumber',selectNumber)
+
+      //selectNumber === temp.length ? setDisabled(true) : '';
     }
  
     
   
 
-    return () => {
-      socket.off("question");
-    };
+     
   }, [timer]);
 
   const handleSubmit = () => {
