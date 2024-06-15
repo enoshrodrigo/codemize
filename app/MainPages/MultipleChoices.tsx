@@ -34,7 +34,7 @@ export default function MultipleChoices() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tempTimer, setTempTimer] = useState(0);
-  const [message, setMessage] = useState('System Offline')
+  const [message, setMessage] = useState('Games is offline,\nplease wait...')
 
   const onLoad = async() => {
   console.log('onload',Question.length)
@@ -62,7 +62,7 @@ export default function MultipleChoices() {
       setIsGameOnline(false)  ,
       setSelectNumber(0),
       setTimer(0),  
-      setMessage(res.data.message ? res.data.message : 'System Offline'),
+      setMessage(res.data.message ? res.data.message : 'Games is offline,\nplease wait...'),
       setRefreshing(false),
       setQuestion([]) ,
       setTemp([])
