@@ -17,7 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const socket = io("http://192.168.1.4:5000/", {
+const socket = io("http://192.168.1.5:5000/", {
   transports: ["websocket"],
   
 });
@@ -40,7 +40,7 @@ export default function MultipleChoices() {
   console.log('onload',Question.length)
  
 
-    await axios.post('http://192.168.1.4:5000/api/question/refresh').then((res) => {
+    await axios.post('http://192.168.1.5:5000/api/question/refresh').then((res) => {
       setRefreshing(false);
       setIsGameOnline(res.data.isGameOnline) ,
       res.data.isGameOnline
@@ -103,6 +103,8 @@ export default function MultipleChoices() {
     intilizeData(e); 
   };
   useEffect(() => {
+    console.log('re ren')
+     onLoad();
     socket.on("connect", ()=>
       {
         console.log('Onload socket')
@@ -119,15 +121,17 @@ export default function MultipleChoices() {
     ); 
 
     return () => {
+      console.log('re ren')
       socket.off("connect", onLoad);
       socket.off("connect_error");
       socket.off("question", question);
     };
   }, []);
+  
   useEffect(() => {
       console.log('timer',timer)  
       
-
+     
     if (timer > 0) {
       console.log('timer 2nd ',timer) 
       const countdown = setTimeout(() => setTimer(timer - 1), 1000);
@@ -168,7 +172,7 @@ export default function MultipleChoices() {
 
   return (
     <>
-      <MainHeader />
+      
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007BFF" />
