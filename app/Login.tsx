@@ -2,19 +2,45 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import axiosInstance from './Authentication/axiosInstance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignIn() {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
   const handleLogin = () => {
+    setLoading(true);
+        setError('');
     // Replace the navigation state to avoid going back to the login screen
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'MainTabs' }],
-    });
+   axiosInstance.post('/login/user',{
+    email:email,
+    password:password
+   }).then(async response=>{
+    const authHeader = response.headers['authorization'];
+            if (authHeader) {
+                const token = authHeader.split(' ')[1]; // Get the token part of 'Bearer <token>'
+                // Store the token in AsyncStorage
+                await AsyncStorage.setItem('token', token);
+                console.log('Login successful:', response.data);
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: '(tabs)' }],
+                });
+            } else {
+                setError('Authorization header is missing in the response');
+            }
+  
+  }).catch(err=>{
+    setError('Error logging in');
+    console.error('Error logging in:', err);
+}).finally( ()=> {
+            setLoading(false);
+        })
   };
   return (
     <View style={styles.container}>
@@ -51,7 +77,7 @@ export default function SignIn() {
         <Text style={styles.signInButtonText}>Sign in</Text>
         </Pressable>
       </TouchableOpacity>
-      <Text style={styles.signupText}>Don't have an account?
+      <Text style={styles.signupText}>Don't have an account?{error}
  
          <Pressable onPress={()=>{navigation.navigate('SignUp')}}><Text style={styles.signupLink}>Sign up</Text></Pressable>
          </Text>

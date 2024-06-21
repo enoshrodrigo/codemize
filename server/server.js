@@ -33,7 +33,27 @@ const db = mysql.createConnection({
   database: "gameapp",
   port: 3306,
 });
+const verify= ((req, res, next)=>{
+   const authHeader =req.headers; 
+  // console.log(authHeader)
+  if(authHeader){
+    const token= authHeader.authorization.split(" ")[1];
+    jwt.verify(token,"theKey",async(err,user)=>{
+      if(err){
 
+        res.status(401).json("Token is not valid")
+    }else{
+        console.log(user)
+        // console.log("Delete token "+token)
+
+        req.user=user;
+        next();
+    }
+
+
+    })
+  } 
+})
 const time = 20;
 
 const question = [
@@ -81,12 +101,7 @@ app.post(bodyParser.urlencoded({ extended: true }));
 let endTime = new Date().getTime() + 0.5 * 60 * 1000;
 // 10 minutes from now
 
-app.get("/api/time", (req, res) => {
-  const currentTime = new Date().getTime();
-  const remainingTime = endTime - currentTime;
-  console.log(remainingTime);
-  res.json({ remainingTime });
-});
+ 
 
 app.post("/api/question/multiple", async (req, res) => {
   console.log("Received request on /multiple");
@@ -112,7 +127,8 @@ app.post("/api/question/multiple", async (req, res) => {
   }
 });
 
-app.post("/api/question/refresh", async (req, res) => {
+app.post("/api/question/refresh",verify, async (req, res) => {
+  console.log(req.user)
   const { isGameOnline } = req.body;
 
   db.query("SELECT * FROM status where id=12", async (err, status) => {
@@ -192,18 +208,7 @@ async function getQuestion(res, isGameOnline, time, message, isrefrsh) {
   });
 }
 
-const verify= ((req, res, next)=>{
-  const authHeader =req; 
-  if(authHeader){
-    const token= req;
-    jwt.verify(token,"theKey",(err,user)=>{
-      err?res.status(404).json(err):res.json(user)
-       
 
-
-    })
-  }
-})
 const genarateAccesToken = (user)=>{
   return jwt.sign({id:user.id,email:user.email,name:user.name},"theKey",{expiresIn:"1000s"}); 
   }
@@ -211,25 +216,23 @@ const genarateAccesToken = (user)=>{
   app.post('/login/user',async (req,res)=>{
     
     const{email,password} = req.body 
-  const isocrrect=   db.query("SELECT * FROM user WHERE email= ? AND password= ?",[email, md5(password)],async(err,status)=>{
+    db.query("SELECT * FROM user WHERE email= ? AND password= ?",[email, md5(password)],async(err,status)=>{
    err?res.json({err:err}):''
-   if(status){ 
+   console.log(status)
+   if(status.length > 0  && status != undefined){ 
 const token=  genarateAccesToken({id:status[0].id, email:status[0].email, name:status[0].name})
-res.setHeader('Authorization',`Bearer ${token}`)
+res.setHeader('Authorization',`Bearer ${token}`) 
 res.status(200).json({ message: 'Token sent in headers' });
    }else{
     res.status(404).json("User name or password incorrect")
    }
-  })
+  }) 
 
 
   })
 
 
-app.post("/api/gettime", async (req, res) => {
-  console.log("Received request on /ti,e");
-  return await io.emit("gettime", { time: time });
-});
+ 
 server.listen("5000", () => {
   console.log("Running on port 5000");
 });

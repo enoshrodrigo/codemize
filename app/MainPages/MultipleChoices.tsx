@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axiosInstance from "../Authentication/axiosInstance";
 import {
   Text,
   View,
@@ -17,7 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const socket = io("http://192.168.43.159:5000/", {
+const socket = io("http://192.168.1.4:5000/", {
   transports: ["websocket"],
   
 });
@@ -40,7 +41,7 @@ export default function MultipleChoices() {
   console.log('onload',Question.length)
  
 
-    await axios.post('http://192.168.43.159:5000/api/question/refresh').then((res) => {
+    await axiosInstance.post('/api/question/refresh').then((res) => {
       setRefreshing(false);
       setIsGameOnline(res.data.isGameOnline) ,
       res.data.isGameOnline
@@ -68,12 +69,10 @@ export default function MultipleChoices() {
       setTemp([])
        )
       }).catch((err) =>
-         {
-
-        console.log(err);
+         { 
         setRefreshing(false);
       }
-    )
+    ).finally(()=> setRefreshing(false))
    
 
   }
