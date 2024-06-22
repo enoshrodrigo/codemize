@@ -15,10 +15,11 @@ import axios from "axios";
 import MainHeader from "../Headers/MainHeader";
 import { useNavigation } from "@react-navigation/native";
  import QuestionScreen from "../componments/QuestionScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage"; 
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const socket = io("http://192.168.1.4:5000/", {
+const socket = io("http://192.168.43.159:5000/", {
   transports: ["websocket"],
   
 });
@@ -46,9 +47,9 @@ export default function MultipleChoices() {
       setIsGameOnline(res.data.isGameOnline) ,
       res.data.isGameOnline
           ? ( 
-            console.log('refreshing game online'),
+            
              Question?.length <= 0 ? (
-           
+           console.log('refreshing game online'),
             //console.log(Question),
               setSelectNumber(0),
               console.log('refreshing question'),
@@ -70,7 +71,11 @@ export default function MultipleChoices() {
        )
       }).catch((err) =>
          { 
-        setRefreshing(false);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          });
+      
       }
     ).finally(()=> setRefreshing(false))
    
@@ -85,17 +90,9 @@ export default function MultipleChoices() {
     
   };
 
-  const intilizeData = (data) => {
-     data.isGameOnline
-          ? (  
-            setIsGameOnline(data.isGameOnline), 
-            setTemp(data.question),
-            setSelectNumber(0),
-            setQuestion(Array(data.question[0])),
-            setTimer(data.time ? data.time : 0),
-            setTempTimer(data.time ? data.time : 0), 
-            setDisabled(false))
-          :( setIsGameOnline(false)  ,setTimer(0), setTempTimer(0),setMessage(data.message ? data.message : 'System Offline', ),setQuestion([]),setTemp([]), setSelectNumber(0));
+  const intilizeData =async (data) => {
+await onLoad();
+
   }
 
   const question = (e) => {
@@ -108,7 +105,7 @@ export default function MultipleChoices() {
       {
         console.log('Onload socket')
        
-        onLoad();
+         onLoad();
       }
     );
     socket.on("connect_error", (error) => console.log("Connection error:", error));
@@ -117,8 +114,7 @@ export default function MultipleChoices() {
         console.log('Question socket' )
         question(e);
       }
-    ); 
-
+    );  
     return () => {
       console.log('re ren')
       socket.off("connect", onLoad);

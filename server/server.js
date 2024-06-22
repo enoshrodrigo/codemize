@@ -35,17 +35,18 @@ const db = mysql.createConnection({
 });
 const verify= ((req, res, next)=>{
    const authHeader =req.headers; 
-  // console.log(authHeader)
+  
   if(authHeader){
-    const token= authHeader.authorization.split(" ")[1];
+    const token= authHeader.authorization.split(' ')[1];
+    
     jwt.verify(token,"theKey",async(err,user)=>{
       if(err){
-
+console.log("Token is not valid")
         res.status(401).json("Token is not valid")
     }else{
         console.log(user)
         // console.log("Delete token "+token)
-
+        console.log(authHeader.authorization.split(' ')[1])
         req.user=user;
         next();
     }
@@ -221,7 +222,7 @@ const genarateAccesToken = (user)=>{
    console.log(status)
    if(status.length > 0  && status != undefined){ 
 const token=  genarateAccesToken({id:status[0].id, email:status[0].email, name:status[0].name})
-res.setHeader('Authorization',`Bearer ${token}`) 
+  res.setHeader('Authorization',`Bearer ${token}`) 
 res.status(200).json({ message: 'Token sent in headers' });
    }else{
     res.status(404).json("User name or password incorrect")

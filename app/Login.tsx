@@ -21,11 +21,12 @@ export default function SignIn() {
     email:email,
     password:password
    }).then(async response=>{
-    const authHeader = response.headers['authorization'];
-            if (authHeader) {
-                const token = authHeader.split(' ')[1]; // Get the token part of 'Bearer <token>'
+    const authHeader =await response.headers['authorization'];
+            if (authHeader) { 
                 // Store the token in AsyncStorage
+              const token  =await  response.headers['authorization'].split(' ')[1]
                 await AsyncStorage.setItem('token', token);
+
                 console.log('Login successful:', response.data);
                 navigation.reset({
                   index: 0,
