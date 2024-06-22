@@ -47,20 +47,17 @@ export default function MultipleChoices() {
       setIsGameOnline(res.data.isGameOnline) ,
       res.data.isGameOnline
           ? ( 
-            
-             Question?.length <= 0 ? (
-           console.log('refreshing game online'),
-            //console.log(Question),
-              setSelectNumber(0),
-              console.log('refreshing question'),
+            console.log(Question?.length),
+             Question?.length <= 0 ? ( 
+            //c.log(Question),
+              setSelectNumber(0), 
               setQuestion(Array(res.data.question[0])) ,
               setTemp(res.data.question),
               setTimer(res.data.time ? res.data.time : 0),
               setTempTimer(res.data.time ? res.data.time : 0)
       ) : ''
           )
-          : (
-      console.log('refreshing game offline'),
+          : ( 
       setIsGameOnline(false)  ,
       setSelectNumber(0),
       setTimer(0),  
@@ -90,11 +87,19 @@ export default function MultipleChoices() {
     
   };
 
-  const intilizeData =async (data) => {
-await onLoad();
-
-  }
-
+ // const intilizeData =async (data) => {await onLoad();}
+ const intilizeData = (data) => {
+  data.isGameOnline
+       ? (  
+         setIsGameOnline(data.isGameOnline), 
+         setTemp(data.question),
+         setSelectNumber(0),
+         setQuestion(Array(data.question[0])),
+         setTimer(data.time ? data.time : 0),
+         setTempTimer(data.time ? data.time : 0), 
+         setDisabled(false))
+       :( setIsGameOnline(false)  ,setTimer(0), setTempTimer(0),setMessage(data.message ? data.message : 'System Offline', ),setQuestion([]),setTemp([]), setSelectNumber(0));
+}
   const question = (e) => {
     intilizeData(e); 
   };
@@ -124,11 +129,11 @@ await onLoad();
   }, []);
   
   useEffect(() => {
-      console.log('timer',timer)  
+    //  console.log('timer',timer)  
       
      
     if (timer > 0) {
-      console.log('timer 2nd ',timer) 
+      //console.log('timer 2nd ',timer) 
       const countdown = setTimeout(() => setTimer(timer - 1), 1000);
       return () => clearTimeout(countdown);
     } else {
@@ -140,7 +145,7 @@ await onLoad();
         setSelectNumber(selectNumber + 1);
         setTimer(tempTimer);
       }
-      console.log('selectNumber',selectNumber)
+     // console.log('selectNumber',selectNumber)
 
       //selectNumber === temp.length ? setDisabled(true) : '';
     }

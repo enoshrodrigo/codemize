@@ -211,7 +211,7 @@ async function getQuestion(res, isGameOnline, time, message, isrefrsh) {
 
 
 const genarateAccesToken = (user)=>{
-  return jwt.sign({id:user.id,email:user.email,name:user.name},"theKey",{expiresIn:"1000s"}); 
+  return jwt.sign({id:user.id,email:user.email,name:user.name},"theKey",{expiresIn:"2000s"}); 
   }
 
   app.post('/login/user',async (req,res)=>{
