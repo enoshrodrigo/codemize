@@ -129,7 +129,7 @@ app.post("/api/question/multiple", async (req, res) => {
 });
 
 app.post("/api/question/refresh",verify, async (req, res) => {
-  console.log(req.user)
+
   const { isGameOnline } = req.body;
 
   db.query("SELECT * FROM status where id=12", async (err, status) => {

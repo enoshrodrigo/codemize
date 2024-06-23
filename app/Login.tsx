@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, Pressable, Alert, Modal, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import axiosInstance from './Authentication/axiosInstance';
@@ -11,38 +11,40 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
   const [showPassword, setShowPassword] = useState(false);
-  const handleLogin = () => {
-    setLoading(true);
-        setError('');
-    // Replace the navigation state to avoid going back to the login screen
-   axiosInstance.post('/login/user',{
-    email:email,
-    password:password
-   }).then(async response=>{
-    const authHeader =await response.headers['authorization'];
-            if (authHeader) { 
-                // Store the token in AsyncStorage
-              const token  =await  response.headers['authorization'].split(' ')[1]
-                await AsyncStorage.setItem('token', token);
 
-                console.log('Login successful:', response.data);
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: '(tabs)' }],
-                });
-            } else {
-                setError('Authorization header is missing in the response');
-            }
-  
-  }).catch(err=>{
-    setError('Error logging in');
-    console.error('Error logging in:', err);
-}).finally( ()=> {
-            setLoading(false);
-        })
+  const handleLogin = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await axiosInstance.post('/login/user', {
+        email,
+        password
+      });
+
+      const authHeader = await response.headers['authorization'];
+      if (authHeader) {
+        const token = await response.headers['authorization'].split(' ')[1];
+        await AsyncStorage.setItem('token', token);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: '(tabs)' }],
+        });
+      } else {
+        setError('Authorization header is missing in the response');
+      }
+    } catch (err) {
+      if (!err.response) {
+        setError('Network error. Please check your connection and try again.');
+      } else {
+        setError('Error logging in');
+      }
+      console.error('Error logging in:', err);
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome Back! <Text style={styles.heart}>❤️</Text></Text>
@@ -69,19 +71,18 @@ export default function SignIn() {
       </View>
       <TouchableOpacity>
         <Pressable onPress={() => navigation.navigate('forgotpassword')}>
-        <Text style={styles.forgotPassword}>Forgot password?</Text>
+          <Text style={styles.forgotPassword}>Forgot password?</Text>
         </Pressable>
       </TouchableOpacity>
       <TouchableOpacity style={styles.signInButton}>
         <Pressable onPress={handleLogin}>
-
-        <Text style={styles.signInButtonText}>Sign in</Text>
+          <Text style={styles.signInButtonText}>{loading ? 'Signing in...' : 'Sign in'}</Text>
         </Pressable>
       </TouchableOpacity>
-      <Text style={styles.signupText}>Don't have an account?{error}
- 
-         <Pressable onPress={()=>{navigation.navigate('SignUp')}}><Text style={styles.signupLink}>Sign up</Text></Pressable>
-         </Text>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      <Text style={styles.signupText}>Don't have an account?
+        <Pressable onPress={() => navigation.navigate('SignUp')}><Text style={styles.signupLink}> Sign up</Text></Pressable>
+      </Text>
       <Text style={styles.orText}>OR</Text>
       <TouchableOpacity style={styles.socialButton}>
         <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2991/2991148.png' }} style={styles.socialIcon} />
@@ -91,6 +92,7 @@ export default function SignIn() {
         <Image source={{ uri: 'https://cdn-icons-png.freepik.com/256/5968/5968764.png?semt=ais_hybrid' }} style={styles.socialIcon} />
         <Text style={styles.socialButtonText}>Sign in with Facebook</Text>
       </TouchableOpacity>
+      
     </View>
   );
 }
@@ -101,15 +103,14 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     justifyContent: 'center',
-   paddingTop: 0,
-   marginTop: 0,
+    paddingTop: 0,
+    marginTop: 0,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
-    
   },
   heart: {
     color: '#f00',
@@ -186,5 +187,21 @@ const styles = StyleSheet.create({
   },
   socialButtonText: {
     fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#fff',
+    fontSize: 18,
   },
 });

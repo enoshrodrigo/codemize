@@ -84,8 +84,9 @@ export default function QuestionScreen({
                 borderRadius: 8,
                 alignSelf: "center",
                 
-              }}
-              onLoadStart={() => ""}
+              }} 
+              onLoadStart={() =>  <ActivityIndicator size="large" color="#0000ff" />}
+              onLoadEnd={() => <ActivityIndicator size="large" color="#0000ff" />}
             />
           </React.Fragment>
         ))}

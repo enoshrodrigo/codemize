@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  Alert,
 } from "react-native";
 import { io } from "socket.io-client";
 import axios from "axios";
@@ -19,7 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const socket = io("http://192.168.43.159:5000/", {
+const socket = io("http://192.168.1.6:5000/", {
   transports: ["websocket"],
   
 });
@@ -47,10 +48,10 @@ export default function MultipleChoices() {
       setIsGameOnline(res.data.isGameOnline) ,
       res.data.isGameOnline
           ? ( 
-            console.log(Question?.length),
+          
              Question?.length <= 0 ? ( 
             //c.log(Question),
-              setSelectNumber(0), 
+              console.log('Question?.length'), setSelectNumber(0), 
               setQuestion(Array(res.data.question[0])) ,
               setTemp(res.data.question),
               setTimer(res.data.time ? res.data.time : 0),
@@ -104,7 +105,7 @@ export default function MultipleChoices() {
     intilizeData(e); 
   };
   useEffect(() => {
-    console.log('re ren')
+    //console.log('re ren')
      onLoad();
     socket.on("connect", ()=>
       {
@@ -113,7 +114,7 @@ export default function MultipleChoices() {
          onLoad();
       }
     );
-    socket.on("connect_error", (error) => console.log("Connection error:", error));
+    socket.on("connect_error", (error) => Alert.alert('Error', 'Socket Error'));
     socket.on("question", (e)=>
       {
         console.log('Question socket' )
@@ -203,7 +204,7 @@ export default function MultipleChoices() {
           ) : (
             <View style={styles.noGameContainer}>
               <Image
-                source={{ uri: 'https://cdn.dribbble.com/users/1186261/screenshots/3718681/_______.gif' }}
+                source={{ uri: 'https://cdn.dribbble.com/users/1186261/screenshots/3718681/_.gif' }}
                 style={styles.noGameImage}
               />
               <Text style={styles.noGameText} >{message}</Text>
