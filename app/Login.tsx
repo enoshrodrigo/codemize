@@ -44,10 +44,10 @@ export default function SignIn() {
       setLoading(false);
     }
   };
+  //<Text style={styles.title}>Welcome Back! <Text style={styles.heart}>❤️</Text></Text>
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back! <Text style={styles.heart}>❤️</Text></Text>
       <Text style={styles.subtitle}>Sign in to your account</Text>
       <TextInput
         style={styles.input}
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     justifyContent: 'center',
-    paddingTop: 0,
+    paddingTop: 10,
     marginTop: 0,
   },
   title: {

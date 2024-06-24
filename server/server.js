@@ -44,9 +44,7 @@ const verify= ((req, res, next)=>{
 console.log("Token is not valid")
         res.status(401).json("Token is not valid")
     }else{
-        console.log(user)
-        // console.log("Delete token "+token)
-        console.log(authHeader.authorization.split(' ')[1])
+         
         req.user=user;
         next();
     }
@@ -111,8 +109,7 @@ app.post("/api/question/multiple", async (req, res) => {
     "UPDATE status SET is_online = ?, time = ?, message = ? WHERE id = 12",
     [isGameOnline, time, message],
     async (err, status) => {
-      if (err) throw err;
-      console.log("Status updated");
+      if (err) throw err; 
     }
   );
   if (isGameOnline) {
@@ -187,7 +184,7 @@ async function getQuestion(res, isGameOnline, time, message, isrefrsh) {
           output.question.push(questionObj);
 
           if (output.question.length === questions.length) {
-            console.log(output);
+         
             if (!isrefrsh) {
               io.emit("question", {
                 question: output.question,
@@ -219,7 +216,7 @@ const genarateAccesToken = (user)=>{
     const{email,password} = req.body 
     db.query("SELECT * FROM user WHERE email= ? AND password= ?",[email, md5(password)],async(err,status)=>{
    err?res.json({err:err}):''
-   console.log(status)
+ 
    if(status.length > 0  && status != undefined){ 
 const token=  genarateAccesToken({id:status[0].id, email:status[0].email, name:status[0].name})
   res.setHeader('Authorization',`Bearer ${token}`) 
@@ -233,6 +230,25 @@ res.status(200).json({ message: 'Token sent in headers' });
   })
 
 
+
+
+  app.get('/api/buzzer',async(req,res)=>{
+console.log(req.query.buzzerId)
+   
+     db.query('INSERT INTO buzzer (buzzerID)VALUES (?) ',req.query.buzzerId,async(err,res)=>{
+       err?console.log('err'):''
+         if(res){
+          db.query('SELECT * FROM buzzer',(err,result)=>{
+            err?console.log('buzzer seelct'):''
+            io.emit("buzzerNUmber", {
+              buzzerOrder: result, 
+            });
+          })
+
+         }
+    })
+    res.send('Buzzer Clicked')
+  })
  
 server.listen("5000", () => {
   console.log("Running on port 5000");
