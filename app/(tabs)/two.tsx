@@ -3,7 +3,7 @@ import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io("http://192.168.1.6:5000/", {
+const socket = io("http://192.168.1.3:5000/", {
   transports: ["websocket"],
 });
 
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4da6ff', // Suitable alternate color
   },
   boxText: {
-    fontSize: 16, // Increased font size for better readability
+    fontSize: 18, // Increased font size for better readability
     fontWeight: 'bold',
     textAlign: 'center', // Center align text for better readability
   },

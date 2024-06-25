@@ -250,6 +250,20 @@ console.log(req.query.buzzerId)
     res.send('Buzzer Clicked')
   })
  
+
+  app.get('/api/buzzer/reset',async(req,res)=>{
+       
+         db.query('TRUNCATE TABLE buzzer',async(err,res)=>{
+           err?console.log('err'):''
+             if(res){
+              console.log('table truncated')
+    
+             }
+        })
+        res.send('Buzzer Clicked')
+      })
+
+
 server.listen("5000", () => {
   console.log("Running on port 5000");
 });
