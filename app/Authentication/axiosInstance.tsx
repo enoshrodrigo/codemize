@@ -6,7 +6,7 @@ import { Alert } from 'react-native';
 
 // Create an instance of Axios
 const axiosInstance = axios.create({
-    baseURL: 'http://192.168.1.3:5000', // Replace with your backend URL
+    baseURL: 'http://192.168.43.159:5000', // Replace with your backend URL
 });
 
 // Add a request interceptor

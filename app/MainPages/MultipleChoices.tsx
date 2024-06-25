@@ -20,7 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const socket = io("http://192.168.1.3:5000/", {
+const socket = io("http://192.168.43.159:5000/", {
   transports: ["websocket"],
   
 });

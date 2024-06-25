@@ -3,7 +3,7 @@ import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const socket = io("http://192.168.1.3:5000/", {
+const socket = io("http://192.168.43.159:5000/", {
   transports: ["websocket"],
 });
 
