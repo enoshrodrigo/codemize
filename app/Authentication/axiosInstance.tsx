@@ -40,7 +40,7 @@ axiosInstance.interceptors.response.use(
             console.log('Unauthorized, redirecting to login...');
             Alert.alert('Unauthorized', 'Session expired. Please log in again.');
             const navigation = useNavigation();
-            navigation.navigate('SignIn'); // Replace 'SignIn' with your login screen route name
+           return navigation.navigate('SignIn'); // Replace 'SignIn' with your login screen route name
         }
         return Promise.reject(error);
     }
