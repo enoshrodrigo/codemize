@@ -204,10 +204,10 @@ export default function MultipleChoices() {
           ) : (
             <View style={{}}>
               {
-               // <Image source={{ uri: 'https://cdn.pixabay.com/animation/2022/07/29/03/42/03-42-02-615_512.gif' }}  style={styles.noGameImage} />
+                // <Image source={{ uri: 'https://cdn.pixabay.com/animation/2022/07/29/03/42/03-42-02-615_512.gif' }}  style={styles.noGameImage} />
               }
                 <LottieView
-        source={require('./rocket.json')}
+        source={require('./rocketroof.json')}
         autoPlay
         loop
         speed={1} 
@@ -215,7 +215,7 @@ export default function MultipleChoices() {
         
         
       />
-        <Text style={styles.noGameText} >{message}</Text>
+              <Text style={styles.noGameText} >{message}</Text>
             </View>
           )}
         </ScrollView>
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: screenWidth -2,
-    height: screenWidth -2,
+    height: screenWidth -12,
   },
   noGameImage: {
     width: screenWidth-2,
