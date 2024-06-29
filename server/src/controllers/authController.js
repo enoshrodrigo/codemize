@@ -6,7 +6,7 @@ const { generateAccessToken } = require("../utils/jwtUtils");
  
 const loginUser = (req, res) => {
   const { email, password } = req.body;
-
+  console.log("logim");
   db.query("SELECT * FROM user WHERE email = ? AND password = ?", [email, md5(password)], async (err, status) => {
     if (err) {
       console.error(err);
@@ -16,6 +16,7 @@ const loginUser = (req, res) => {
     if (status.length > 0 && status != undefined) {
       const token = generateAccessToken({ id: status[0].id, email: status[0].email, name: status[0].name });
       res.setHeader("Authorization", `Bearer ${token}`);
+      console.log("Token sent in headers");
       res.status(200).json({ message: "Token sent in headers" });
     } else {
       res.status(404).json("User name or password incorrect");

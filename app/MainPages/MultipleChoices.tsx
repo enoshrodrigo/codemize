@@ -17,10 +17,10 @@ import MainHeader from "../Headers/MainHeader";
 import { useNavigation } from "@react-navigation/native";
  import QuestionScreen from "../componments/QuestionScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage"; 
-
+import LottieView from 'lottie-react-native';
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const socket = io("http://192.168.43.159:5000/", {
+const socket = io("http://192.168.1.3:5000/", {
   transports: ["websocket"],
   
 });
@@ -105,7 +105,7 @@ export default function MultipleChoices() {
     intilizeData(e); 
   };
   useEffect(() => {
-    //console.log('re ren')
+    console.log('re ren')
      onLoad();
     socket.on("connect", ()=>
       {
@@ -202,12 +202,20 @@ export default function MultipleChoices() {
               selectedChoice={selectedChoice}
             />
           ) : (
-            <View style={styles.noGameContainer}>
-              <Image
-                source={{ uri: 'https://cdn.dribbble.com/users/1186261/screenshots/3718681/_.gif' }}
-                style={styles.noGameImage}
-              />
-              <Text style={styles.noGameText} >{message}</Text>
+            <View style={{}}>
+              {
+               // <Image source={{ uri: 'https://cdn.pixabay.com/animation/2022/07/29/03/42/03-42-02-615_512.gif' }}  style={styles.noGameImage} />
+              }
+                <LottieView
+        source={require('./rocket.json')}
+        autoPlay
+        loop
+        speed={1} 
+        style={styles.animation}
+        
+        
+      />
+        <Text style={styles.noGameText} >{message}</Text>
             </View>
           )}
         </ScrollView>
@@ -221,8 +229,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    width: screenWidth ,
-    height: screenHeight,
+ 
+  }, animation: {
+    
+    alignSelf: 'center',
+    width: screenWidth -0,
+    height: screenWidth -1,
   },
   noGameContainer: {
     flex: 1,
@@ -240,8 +252,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'red',
-    position: 'absolute',
     textAlign: 'center',
+    flexWrap: 'wrap',
     alignSelf: 'center',
   },
 });

@@ -1,10 +1,11 @@
 // controllers/questionController.js
 const { db } = require("../models/db");
-const { server } =  require("../index");
-const socketIO = require("socket.io");
-const io = socketIO(server);
+const express = require("express");
+const router = express.Router();
+const socket = require("../utils/socket");
 
 const socketFunction = async (req, res) => {
+  const io = await socket.getIO();
     console.log("Received request on /multiple");
     const { question, time, isGameOnline, message } = req.body;
     await db.query(
@@ -57,6 +58,7 @@ const refreshQuestion = async (req, res) => {
 
 
 const getQuestion = async function getQuestion(res, isGameOnline, time, message, isrefrsh) {
+  const io = await socket.getIO();
     db.query("SELECT * FROM questions", async (err, questions) => {
       if (err) throw err;
   
