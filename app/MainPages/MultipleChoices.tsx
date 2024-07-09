@@ -20,7 +20,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from 'lottie-react-native';
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const socket = io("http://192.168.1.3:5000/", {
+const socket = io("http://192.168.1.7:5000/", {
   transports: ["websocket"],
   
 });
@@ -145,6 +145,7 @@ export default function MultipleChoices() {
         setQuestion(Array(temp[selectNumber + 1]));
         setSelectNumber(selectNumber + 1);
         setTimer(tempTimer);
+        console.log('selectNumber question uploded',selectedChoice)
       }
      // console.log('selectNumber',selectNumber)
 

@@ -232,7 +232,7 @@ res.status(200).json({ message: 'Token sent in headers' });
 
 
 
-  app.get('/api/buzzer',async(req,res)=>{
+app.get('/api/buzzer/click',async(req,res)=>{
 console.log(req.query.buzzerId)
    
      db.query('INSERT INTO buzzer (buzzerID)VALUES (?) ',req.query.buzzerId,async(err,res)=>{

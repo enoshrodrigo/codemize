@@ -2,13 +2,15 @@ import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import BuzzerScreen from '../componments/displayBuzzer';
 
-const socket = io("http://192.168.1.3:5000/", {
+const socket = io("http://192.168.1.7:5000/", {
   transports: ["websocket"],
 });
 
 interface BuzzerData {
-  buzzerID: string;
+  buzzerID: number;
+  team_name: string;
   clickedAt: string;
 }
 
@@ -41,17 +43,29 @@ export default function TabTwoScreen() {
   }, []);
 
   return (
+
     <ScrollView>
+      <BuzzerScreen />
       <View style={styles.container}>
-        {data.map((item, index) => (
+        <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', margin: 10 , color :'blue'}}>
+          Buzzer Click
+        </Text> 
+        { data.length > 0 ? data.map((item, index) => (
           <View 
             key={index} 
             style={[styles.box, index % 2 === 0 ? styles.boxRed : styles.boxAlternate]}
           >
-            <Text style={styles.boxText}>Buzzer ID: {item.buzzerID}</Text>
-            <Text style={styles.boxText}>Clicked At: {item.clickedAt}</Text>
+            <Text style={styles.boxText}>{item.buzzerID?`Team: ${item.team_name}`:'Game ended thanks for participant'}</Text>
+            <Text style={styles.boxText}>{item.buzzerID?`Clicked At : ${item.clickedAt}`:''}</Text>
           </View>
-        ))}
+          
+        ))
+        :   <View 
+        key={0} 
+        style={[styles.box,   styles.boxAlternate]}
+      >
+        <Text style={styles.boxText}>Game Will Start Soon</Text> 
+      </View>}
       </View>
     </ScrollView>
   );
@@ -63,13 +77,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    padding: 10,
+    padding: 0,
   },
   box: {
     borderRadius: 10,
     padding: 15,
     margin: 10,
-    width: '40%',
+    width: '80%',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
