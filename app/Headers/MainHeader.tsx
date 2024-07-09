@@ -17,7 +17,7 @@ import {
 } from "@expo/vector-icons";
 
 export default function MainHeader({ navigation, title}:{navigation:any,  title:any}) {
-  console.log(navigation);
+  /* console.log(navigation); */
   return (
     <SafeAreaView style={{ backgroundColor: "purple", }}>
       <View

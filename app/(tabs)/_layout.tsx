@@ -45,6 +45,7 @@ export default function TabLayout() {
         name="two"
         options={{
           title: 'USER',
+          header: (p) => <MainHeader title={undefined} {...p}  />,
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />

@@ -6,5 +6,6 @@ const { verify } = require("../controllers/authController");
 
 router.post("/question/socket",questionController.socketFunction);
 router.post("/question/refresh", verify, questionController.refreshQuestion);
+router.post("question/save", verify, questionController.saveAnswer);
 
 module.exports = router;

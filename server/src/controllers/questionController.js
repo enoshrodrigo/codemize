@@ -114,4 +114,22 @@ const getQuestion = async function getQuestion(res, isGameOnline, time, message,
     });
   }
 
-  module.exports = { refreshQuestion,socketFunction };
+  const saveAnswer = async (req, res) => {
+    const { question_id, answer } = req.body;
+    const io = await socket.getIO();
+    db.query(
+      "SELECT * FROM answer WHERE question_id = ? AND answer = ?",
+      [question_id, answer],
+      async (err, correct) => {
+        if (err) throw err;
+        if (correct.length > 0) {
+          io.emit("answer", { isCorrect: true });
+          res.json({ isCorrect: true });
+        } else {
+          io.emit("answer", { isCorrect: false });
+          res.json({ isCorrect: false });
+        }
+      }
+    );
+  }
+  module.exports = { refreshQuestion,socketFunction,saveAnswer };

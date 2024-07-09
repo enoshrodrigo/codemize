@@ -7,6 +7,7 @@ const { connectMongoDB } = require("./models/db");
 const authRoutes = require("./routes/authRoutes");
 const questionRoutes = require("./routes/questionRoutes");
 const socket = require("./utils/socket");
+const buzzerRoutes = require("./routes/buzzerRoutes");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,8 +20,9 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes 
-app.use("/api", questionRoutes);
 app.use("/login", authRoutes);
+app.use("/api", questionRoutes);
+app.use("/api", buzzerRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
