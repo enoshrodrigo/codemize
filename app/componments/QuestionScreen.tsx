@@ -102,11 +102,15 @@ export default function QuestionScreen({
               styles.choice,
                 {
                   backgroundColor:
-                    selectedChoice === idx ? "#add8e6" : "#fff",
+                   selectedChoice?.answerId === answer.answerId ? "#add8e6" : "#fff",
                 },
                 disabled && { backgroundColor: "#d3d3d3" },
               ]}
-              onPress={() => setSelectedChoice(idx)}
+              onPress={() => setSelectedChoice({
+                idx:idx,
+                questionID: choice.id,
+                answerId: answer.answerId,
+              })}
               disabled={disabled}
             >
               <Ionicons name="book" size={24} color="purple" />

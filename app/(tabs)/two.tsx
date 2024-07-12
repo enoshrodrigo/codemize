@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import BuzzerScreen from '../componments/displayBuzzer';
 
-const socket = io("http://192.168.1.7:5000/", {
+const socket = io("http://192.168.1.8:5000/", {
   transports: ["websocket"],
 });
 

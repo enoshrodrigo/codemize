@@ -7,14 +7,14 @@ const { generateAccessToken } = require("../utils/jwtUtils");
 const loginUser = (req, res) => {
   const { email, password } = req.body;
   console.log("logim");
-  db.query("SELECT * FROM user WHERE email = ? AND password = ?", [email, md5(password)], async (err, status) => {
+  db.query("SELECT * FROM  team_assign WHERE email = ? AND password = ?", [email, md5(password)], async (err, status) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: "Internal server error" });
     }
 
     if (status.length > 0 && status != undefined) {
-      const token = generateAccessToken({ id: status[0].id, email: status[0].email, name: status[0].name });
+      const token = generateAccessToken({ id: status[0].id, email: status[0].email, name: status[0].team_name });
       res.setHeader("Authorization", `Bearer ${token}`);
       console.log("Token sent in headers");
       res.status(200).json({ message: "Token sent in headers" });

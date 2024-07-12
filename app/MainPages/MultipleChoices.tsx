@@ -20,14 +20,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from 'lottie-react-native';
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-const socket = io("http://192.168.1.7:5000/", {
+const socket = io("http://192.168.1.8:5000/", {
   transports: ["websocket"],
   
 });
 
 export default function MultipleChoices() {
   const navigation = useNavigation();
-  const [selectedChoice, setSelectedChoice] = useState(null);
+  const [selectedChoice, setSelectedChoice] = useState({
+    idx: null,
+    questionID: null,
+    answerId: null,
+
+  });
   const [timer, setTimer] = useState(0);
   const [disabled, setDisabled] = useState(false);
   const [Question, setQuestion] = useState([]);
@@ -138,14 +143,14 @@ export default function MultipleChoices() {
       const countdown = setTimeout(() => setTimer(timer - 1), 1000);
       return () => clearTimeout(countdown);
     } else {
-     
+     console.log('selectNumber question uploded',selectedChoice)
       setSelectedChoice(null);
       if (selectNumber <= temp.length - 2) {
         setDisabled(false);
         setQuestion(Array(temp[selectNumber + 1]));
         setSelectNumber(selectNumber + 1);
         setTimer(tempTimer);
-        console.log('selectNumber question uploded',selectedChoice)
+        
       }
      // console.log('selectNumber',selectNumber)
 
