@@ -20,8 +20,8 @@ import QuestionScreen from "../componments/QuestionScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from "lottie-react-native";
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
-const socket = io("http://192.168.1.7:5000/", {
+const API_URL: string = process.env.EXPO_PUBLIC_API_URL || "";
+const socket = io(API_URL, {
   transports: ["websocket"],
 });
 
