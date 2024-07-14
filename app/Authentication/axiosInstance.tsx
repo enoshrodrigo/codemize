@@ -3,10 +3,10 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
-
+const AUTH_API_URL: string = process.env.EXPO_PUBLIC_AUTH_API_URL || "";
 // Create an instance of Axios
 const axiosInstance = axios.create({
-    baseURL: 'http://192.168.1.8:5000', // Replace with your backend URL
+    baseURL: AUTH_API_URL, // Replace with your backend URL
 });
 
 // Add a request interceptor
