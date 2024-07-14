@@ -3,8 +3,8 @@ import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import BuzzerScreen from '../componments/displayBuzzer';
-
-const socket = io("http://192.168.1.8:5000/", {
+const API_URL: string = process.env.EXPO_PUBLIC_API_URL || "";
+const socket = io(API_URL, {
   transports: ["websocket"],
 });
 
