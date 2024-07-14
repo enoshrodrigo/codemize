@@ -142,8 +142,11 @@ export default function MultipleChoices() {
       //console.log('timer 2nd ',timer) 
       const countdown = setTimeout(() => setTimer(timer - 1), 1000);
       return () => clearTimeout(countdown);
-    } else {
-     console.log('selectNumber question uploded',selectedChoice)
+    } else { 
+     if(!(selectedChoice === null)  ){
+      console.log('selectNumber question uploded',selectedChoice)
+     }
+
       setSelectedChoice(null);
       if (selectNumber <= temp.length - 2) {
         setDisabled(false);
