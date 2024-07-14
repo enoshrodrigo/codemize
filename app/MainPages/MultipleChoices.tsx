@@ -158,8 +158,7 @@ export default function MultipleChoices() {
         setDisabled(false);
         setQuestion(Array(temp[selectNumber + 1]));
         setSelectNumber(selectNumber + 1);
-        setTimer(tempTimer);
-        console.log('selectNumber question uploded',selectedChoice)
+        setTimer(tempTimer); 
       }
       // console.log('selectNumber',selectNumber)
 
