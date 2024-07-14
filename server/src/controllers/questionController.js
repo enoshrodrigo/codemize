@@ -86,6 +86,7 @@ const getQuestion = async function getQuestion(res, isGameOnline, time, message,
               image: question.image,
               answer: answers.map((answer) => ({
                 option: answer.answer,
+                answerId: answer.id,
               })),
             };
   

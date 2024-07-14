@@ -15,7 +15,7 @@ interface BuzzerData {
 }
 
 export default function TabTwoScreen() {
-  const [data, setData] = useState<BuzzerData[]>([]);
+  const [data, setData] = useState<BuzzerData[]>([]); 
 
   useEffect(() => {
     const handleConnect = () => {
