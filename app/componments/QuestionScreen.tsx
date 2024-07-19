@@ -21,7 +21,7 @@ export default function QuestionScreen({
   selectedChoice,
   setSelectedChoice,
   disabled,
-  handleSubmit,
+ 
   timer,
 }) {
   
@@ -122,7 +122,7 @@ export default function QuestionScreen({
       </View>
       <View style={styles.footer}>
         
-        <Pressable
+  {/*       <Pressable
           style={{
             marginBottom: 12, 
             borderRadius: 12,
@@ -147,7 +147,7 @@ export default function QuestionScreen({
             Submit
           </Text>
           
-        </Pressable>
+        </Pressable> */}
       </View>
     </View>
   );

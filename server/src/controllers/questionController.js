@@ -93,7 +93,7 @@ const getQuestion = async function getQuestion(res, isGameOnline, time, message,
             output.question.push(questionObj);
   
             if (output.question.length === questions.length) {
-              console.log(output);
+           /*    console.log(output); */
               if (!isrefrsh) {
                 io.emit("question", {
                   question: output.question,
@@ -116,21 +116,28 @@ const getQuestion = async function getQuestion(res, isGameOnline, time, message,
   }
 
   const saveAnswer = async (req, res) => {
-    const { question_id, answer } = req.body;
-    const io = await socket.getIO();
-    db.query(
-      "SELECT * FROM answer WHERE question_id = ? AND answer = ?",
-      [question_id, answer],
-      async (err, correct) => {
-        if (err) throw err;
-        if (correct.length > 0) {
-          io.emit("answer", { isCorrect: true });
-          res.json({ isCorrect: true });
-        } else {
-          io.emit("answer", { isCorrect: false });
-          res.json({ isCorrect: false });
+    try
+    {
+      const { answerId, questionID, idx } = req.body;
+      if(answerId && questionID ){
+      db.query(
+        "INSERT INTO multiple_user_answers (question_id, answer_id, team_assign_id, created_at) VALUES (?,?,?,?)",
+        [questionID, answerId, req.user.id, new Date()],
+        (err, result) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({ error: "Internal server error" });
+          }
+          res.status(200).json({ message: "Answer saved successfully" });
         }
+      );
       }
-    );
+    }
+    catch(err)
+    {
+      console.log(err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
   }
+  
   module.exports = { refreshQuestion,socketFunction,saveAnswer };

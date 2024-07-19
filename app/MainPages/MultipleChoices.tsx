@@ -131,10 +131,18 @@ export default function MultipleChoices() {
       socket.off("question", question);
     };
   }, []);
-  const saveQuestion = async () => {
+  const saveQuestion = async ({answerId, idx, questionID}:any) => {
     try {
-      await axiosInstance.post("/api/question/save").then((res) => {
-        console.log("saveQuestion", res.data);
+      console.log('saveQuestion',answerId, idx, questionID)
+      await axiosInstance.post("/api/question/save",{
+        questionID: questionID,
+        answerId: answerId,
+        idx: idx,
+
+      }).then((res) => {
+        if(res.status == 200){
+          console.log('Question Saved')
+        }
       });
     } catch (error) {
       Alert.alert("Error", "Error while saving question");
@@ -149,8 +157,8 @@ export default function MultipleChoices() {
       const countdown = setTimeout(() => setTimer(timer - 1), 1000);
       return () => clearTimeout(countdown);
     } else { 
-     if(!(selectedChoice === null)  ){
-      console.log('selectNumber question uploded',selectedChoice)
+     if(!(selectedChoice == null)  ){
+      saveQuestion(selectedChoice);
      }
 
       setSelectedChoice(null);
@@ -160,25 +168,13 @@ export default function MultipleChoices() {
         setSelectNumber(selectNumber + 1);
         setTimer(tempTimer); 
       }
-      // console.log('selectNumber',selectNumber)
-
-      //selectNumber === temp.length ? setDisabled(true) : '';
+     if( selectNumber == temp.length - 1){setIsGameOnline(false)
+         setMessage('Game Ended')
+        }
     }
   }, [timer]);
 
-  const handleSubmit = () => {
-    if (selectedChoice !== null) {
-      alert(`You selected: ${selectedChoice}`);
-      setDisabled(true);
-      setSelectedChoice(null);
-      if (selectNumber <= temp.length - 2) {
-        setDisabled(false);
-        setQuestion(Array(temp[selectNumber + 1]));
-        setSelectNumber(selectNumber + 1);
-        setTimer(tempTimer);
-      }
-    }
-  };
+ 
 
   return (
     <>
@@ -206,7 +202,7 @@ export default function MultipleChoices() {
               timer={timer}
               disabled={disabled}
               setSelectedChoice={setSelectedChoice}
-              handleSubmit={handleSubmit}
+            /*   handleSubmit={handleSubmit} */
               selectedChoice={selectedChoice}
             />
           ) : (
