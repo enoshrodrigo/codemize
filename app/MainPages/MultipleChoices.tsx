@@ -157,6 +157,7 @@ export default function MultipleChoices() {
       const countdown = setTimeout(() => setTimer(timer - 1), 1000);
       return () => clearTimeout(countdown);
     } else { 
+         console.log('timer 3rd ',selectedChoice)
      if(!(selectedChoice == null)  ){
       saveQuestion(selectedChoice);
      }
