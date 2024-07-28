@@ -29,7 +29,7 @@ export default function BuzzerScreen() {
        
         
         <Text style={styles.question}  >
-          {'item.question'}
+          {'What is the capital of France?'}
         </Text>
    
        </View>
@@ -69,7 +69,7 @@ export default function BuzzerScreen() {
        
           <React.Fragment  >
           <LottieView
-        source={require('../MainPages/rocket.json')}
+        source={require('../MainPages/world.json')}
         autoPlay
         loop
         speed={1} 

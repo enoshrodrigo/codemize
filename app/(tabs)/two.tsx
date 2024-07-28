@@ -3,6 +3,7 @@ import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import BuzzerScreen from '../componments/displayBuzzer';
+import React from 'react';
 const API_URL: string = process.env.EXPO_PUBLIC_API_URL || "";
 const socket = io(API_URL, {
   transports: ["websocket"],
@@ -55,8 +56,8 @@ export default function TabTwoScreen() {
             key={index} 
             style={[styles.box, index % 2 === 0 ? styles.boxRed : styles.boxAlternate]}
           >
-            <Text style={styles.boxText}>{item.buzzerID?`Team: ${item.team_name}`:'Game ended thanks for participant'}</Text>
-            <Text style={styles.boxText}>{item.buzzerID?`Clicked At : ${item.clickedAt}`:''}</Text>
+            <Text style={styles.boxText}>{item.buzzerID?`${item.team_name}`:'Game ended thanks for participant'}</Text>
+          {/*   <Text style={styles.boxText}>{item.buzzerID?`Clicked At : ${item.clickedAt}`:''}</Text> */}
           </View>
           
         ))
