@@ -14,9 +14,14 @@ interface BuzzerData {
   team_name: string;
   clickedAt: string;
 }
+interface BuzzerQuestion {
+  question: string;
+  time: number; 
+}
 
 export default function TabTwoScreen() {
   const [data, setData] = useState<BuzzerData[]>([]); 
+  const [question, setQuestion] = useState<BuzzerQuestion[]>([{question: '', time: 0}]);
 
   useEffect(() => {
     const handleConnect = () => {
@@ -27,9 +32,11 @@ export default function TabTwoScreen() {
       Alert.alert('Error', 'Socket Error');
     };
 
-    const handleBuzzerNumber = (e: { buzzerOrder: BuzzerData[] }) => {
+    const handleBuzzerNumber = (e: { buzzerOrder: BuzzerData[], buzzerQuestion: BuzzerQuestion[]}) => {
       console.log('Buzzer socket');
       setData(e.buzzerOrder);
+      setQuestion(e?.buzzerQuestion)
+      console.log('Buzzer socket', e?.buzzerQuestion);
     };
 
     socket.on("connect", handleConnect);
@@ -46,7 +53,7 @@ export default function TabTwoScreen() {
   return (
 
     <ScrollView>
-      <BuzzerScreen />
+      <BuzzerScreen question={question} />
       <View style={styles.container}>
         <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', margin: 10 , color :'blue'}}>
           Buzzer Click

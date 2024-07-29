@@ -1,183 +1,110 @@
-import React from "react";
+import React from 'react';
 import {
   Text,
   View,
-  TouchableOpacity,
-  Button,
   StyleSheet,
   Dimensions,
-  ScrollView,
-  Image,
-  ActivityIndicator,
-  Pressable,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import LottieView from "lottie-react-native";
+} from 'react-native';
+import LottieView from 'lottie-react-native';
 
 const screenWidth = Dimensions.get("window").width;
-const screenHeight = Dimensions.get("window").height;
 
-export default function BuzzerScreen() {
-  
-
+export default function BuzzerScreen(question: any) {
+  console.log('hhhh',question);
   return (
-    <View style={styles.container}> 
+   <React.Fragment  >
+    {
+      //check is array or not
+    
+        <View style={styles.container}>
+          <View style={styles.questionContainer}>
+         {   
+         question.question && question.question.length > 0
+       && question.question.map((item: any, index: number) => ( 
+        <>
+        <Text key={index} style={styles.question}>{item.question}</Text>
+            <Text style={styles.timer}>Time: {item.time} seconds</Text> 
+            </>
+             ))
+             }
+             </View>
+            <View style={styles.animationContainer}>
+              <LottieView
+                style={styles.animation}
+                source={require('../MainPages/world.json')}
+                autoPlay
+                loop
+              />
+            </View>
+          </View>
+     
+    
 
 
-      <View style={styles.questionContainer}>
-        
-       
-        
-        <Text style={styles.question}  >
-          {'What is the capital of France?'}
-        </Text>
-   
-       </View>
 
-      <Text style={[styles.timer,
-        {color: 2 <= 5 ? "red" : "black"}
-        ,
-        {fontWeight: 2 <= 5 ? "bold" : "bold",
-        fontSize: 2 <= 5 ? 20 : 19,
-         }
-        ]}>
-        
-        Time remaining: {2}s
-        </Text>
-       
-      <View
-        style={{
-          backgroundColor: "transparent",
-          width: screenWidth - 22,
-          borderColor: "#ccc",
-          borderWidth: 1,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84, 
-
-   elevation: 5,
-          borderRadius: 8,
-          padding: 0,
-          marginBottom: 20,
-          alignItems: "center",overflow: "hidden"
-        }}
-      >
-       
-          <React.Fragment  >
-          <LottieView
-        source={require('../MainPages/world.json')}
-        autoPlay
-        loop
-        speed={1} 
-        
-        
-         style={{
-                width: "100%",
-                height: 230,
-                margin: 0,
-                borderRadius: 8,
-                alignSelf: "center",
-                
-              }} 
-      />
-            
-          </React.Fragment>
-       
-      </View>
-
-      <View style={styles.choicesContainer}>
- 
-
-      </View>
-      <View style={styles.footer}>
-        
-        
-      </View>
-    </View>
+    }
+    </React.Fragment>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
-  questionContainer: 
-  {
-    flexDirection: 'row',
-    justifyContent: 'center' ,
-    borderColor: "#ccc",
-    borderWidth:0.3,
-    shadowColor: "#000",
+  questionContainer: {
+    width: screenWidth - 14,
+    marginBottom: 20,
+    backgroundColor: '#f0f8ff',
+    borderRadius: 8,
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 0.5,
-      
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderWidth: 0.3,
+    borderColor: '#ccc',
+  },
+  question: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textTransform: 'uppercase',
+  },
+  timer: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'red',
+    marginBottom: 14,
+  },
+  animationContainer: {
+    width: screenWidth - 22,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
     borderRadius: 8,
-    padding: 0,
-    width: screenWidth-14 ,
-    marginBottom: 20, 
-    backgroundColor:'#f0f8ff',
+    overflow: 'hidden',
+    marginBottom: 20,
+    alignItems: 'center',
   },
-  question: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 12,
-    textAlign: "center",
-    marginTop: 20,
-    borderRadius: 12,
-    
-    textTransform: "uppercase",
-  },
-  choicesContainer: {
-    width: "100%",
-    marginBottom: 0,
-  },
-  choice: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    padding: 0,
-    marginBottom: 0,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    width: "100%",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 0.5,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 2,
-  },
-  choiceText: {
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: '500',
-    flex: 1,
-    flexWrap: "wrap", // Ensures text wraps within the box
-    flexShrink: 1, // Ensures text shrinks to fit
-  },
-  footer: {
-    alignItems: "center",
-  },
-  timer: {
-    fontSize: 18,
-    marginBottom: 14,
-    alignSelf: "center",
-    fontWeight: "bold",
+  animation: {
+    width: '100%',
+    height: 230,
   },
 });
