@@ -32,26 +32,31 @@ export default function TabTwoScreen() {
     const handleConnectError = (error: any) => {
       Alert.alert('Error', 'Socket Error');
     };
+    const handleBuzzerStart = (e: { buzzerQuestion: BuzzerQuestion[]}) => {
 
-    const handleBuzzerNumber = (e: { buzzerOrder: BuzzerData[], buzzerQuestion: BuzzerQuestion[]}) => {
-      console.log('Buzzer socket');
-      setData(e.buzzerOrder);
-     
       if(e.buzzerQuestion.length > 0){
-        console.log('Buzzer reeeeeæ');
+        console.log('Buzzer reeeeeæ',e.buzzerQuestion.length);
         setQuestion(e.buzzerQuestion);
       }
       console.log('Buzzer socket', e?.buzzerQuestion);
+    };
+    const handleBuzzerNumber = (e: { buzzerOrder: BuzzerData[]}) => {
+      console.log('Buzzer socket');
+      setData(e.buzzerOrder);
+     
+      
     };
 
     socket.on("connect", handleConnect);
     socket.on("connect_error", handleConnectError);
     socket.on("buzzerNUmber", handleBuzzerNumber);
+    socket.on("buzzerStart", handleBuzzerStart);
 
     return () => {
       socket.off("connect", handleConnect);
       socket.off("connect_error", handleConnectError);
       socket.off("buzzerNUmber", handleBuzzerNumber);
+      socket.off("buzzerStart", handleBuzzerStart);
     };
   }, []);
 

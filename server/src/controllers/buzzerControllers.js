@@ -27,7 +27,6 @@ const buzzerStart = async(req,res)=>{
                 err?console.log('buzzer seelct'):''  
                 io.emit("buzzerNUmber", {
                   buzzerOrder: result, 
-                  buzzerQuestion:  [{}],
                 });
               })
     
@@ -56,7 +55,7 @@ const buzzerReset = async(req,res)=>{
               err?console.log('err'):''  
               if(res){
                 console.log('question displayed')
-                io.emit("buzzerNUmber", {
+                io.emit("buzzerStart", {
                   buzzerOrder: [{}], 
                   buzzerQuestion:  [
                     {question: result[0].question, time : result[0].time}, 
