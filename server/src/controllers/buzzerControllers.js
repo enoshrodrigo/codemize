@@ -27,6 +27,7 @@ const buzzerStart = async(req,res)=>{
                 err?console.log('buzzer seelct'):''  
                 io.emit("buzzerNUmber", {
                   buzzerOrder: result, 
+                  buzzerQuestion:  [{}],
                 });
               })
     

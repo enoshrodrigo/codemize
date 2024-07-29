@@ -23,6 +23,7 @@ export default function TabTwoScreen() {
   const [data, setData] = useState<BuzzerData[]>([]); 
   const [question, setQuestion] = useState<BuzzerQuestion[]>([{question: '', time: 0}]);
 
+  const useMemoQuestion = React.useMemo(() => question, [question]);
   useEffect(() => {
     const handleConnect = () => {
       console.log('Onload socket');
@@ -35,7 +36,11 @@ export default function TabTwoScreen() {
     const handleBuzzerNumber = (e: { buzzerOrder: BuzzerData[], buzzerQuestion: BuzzerQuestion[]}) => {
       console.log('Buzzer socket');
       setData(e.buzzerOrder);
-      setQuestion(e?.buzzerQuestion)
+     
+      if(e.buzzerQuestion.length > 0){
+        console.log('Buzzer reeeeeæ');
+        setQuestion(e.buzzerQuestion);
+      }
       console.log('Buzzer socket', e?.buzzerQuestion);
     };
 
@@ -53,7 +58,7 @@ export default function TabTwoScreen() {
   return (
 
     <ScrollView>
-      <BuzzerScreen question={question} />
+      <BuzzerScreen question={useMemoQuestion} />
       <View style={styles.container}>
         <Text style={{ fontSize: 20, fontWeight: 'bold', textAlign: 'center', margin: 10 , color :'blue'}}>
           Buzzer Click
