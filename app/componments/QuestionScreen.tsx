@@ -95,7 +95,7 @@ export default function QuestionScreen({
       <View style={styles.choicesContainer}>
 
         {Question && Question.map((choice, index) =>
-          choice.answer.map((answer, idx) => (
+           choice.answer.map((answer, idx) => (
             <TouchableOpacity
             key={idx}
             style={[

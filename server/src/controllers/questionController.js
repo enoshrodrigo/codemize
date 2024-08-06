@@ -58,8 +58,9 @@ const refreshQuestion = async (req, res) => {
 
 
 const getQuestion = async function getQuestion(res, isGameOnline, time, message, isrefrsh) {
+  
   const io = await socket.getIO();
-    db.query("SELECT * FROM questions", async (err, questions) => {
+    db.query("SELECT * FROM questions WHERE id NOT IN (SELECT question_id FROM multiple_user_answers)", async (err, questions) => {
       if (err) throw err;
   
       // Initialize the JSON structure
@@ -71,6 +72,15 @@ const getQuestion = async function getQuestion(res, isGameOnline, time, message,
       };
   
       // Iterate over each question
+      //console.log(questions.length);
+      if (questions.length === 0) {
+        res.json({
+          question: Array([]),
+          time: 0,
+          isGameOnline: false,
+          message: 'Your team answerd all questions',
+        });
+      }
       await questions.forEach((question) => {
         // Query to fetch answers for each question
         db.query(
@@ -106,9 +116,9 @@ const getQuestion = async function getQuestion(res, isGameOnline, time, message,
                 question: output.question,
                 time: time,
                 isGameOnline: isGameOnline,
-                message: message,
+                message: message?message:'kkk',
               });
-            }
+            } 
           }
         );
       });
@@ -119,7 +129,9 @@ const getQuestion = async function getQuestion(res, isGameOnline, time, message,
     try
     {
       const { answerId, questionID, idx } = req.body;
-      if(answerId && questionID ){
+      console.log('answer route ',questionID)
+      if(questionID){
+        
       db.query(
         "INSERT INTO multiple_user_answers (question_id, answer_id, team_assign_id, created_at) VALUES (?,?,?,?)",
         [questionID, answerId, req.user.id, new Date()],
