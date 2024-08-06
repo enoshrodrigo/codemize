@@ -6,6 +6,8 @@ import {
   Button,
   StyleSheet,
   SafeAreaView,
+  StatusBar,
+  Platform,
 } from "react-native";
 import {
   Ionicons,
@@ -14,16 +16,19 @@ import {
   FontAwesome6,
 } from "@expo/vector-icons";
 
-export default function MainHeader() {
+export default function MainHeader({ navigation, title}:{navigation:any,  title:any}) {
+  /* console.log(navigation); */
   return (
     <SafeAreaView style={{ backgroundColor: "purple", }}>
       <View
         style={{
+          paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 8,
           backgroundColor:  "purple",
           flexDirection: "row",
           marginTop: 4,
           justifyContent: "space-between",
           borderColor: "purple",
+           alignSelf: "center",
           
            shadowColor: "purple",
            
@@ -60,18 +65,18 @@ export default function MainHeader() {
               borderRadius: 14,
               alignItems: "center",
               padding: 2,
-              width: "80%",
-              gap: 3,
-              marginLeft: 4,
+               
+              gap: 10,
+              marginLeft: 0,
             }}
           >
             <MaterialCommunityIcons
               name="lightbulb-on"
-              size={48}
+              size={38}
               color="orange"
             />
             <Text
-              style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}
+              style={{ fontSize: 22, fontWeight: "bold", textAlign: "center" }}
             >
               12
             </Text>
@@ -97,8 +102,8 @@ export default function MainHeader() {
               justifyContent: "center",
               padding: 2,
               width: "80%",
-              gap: 3,
-              marginRight: 4,
+              gap: 6,
+              marginRight: 0,
             }}
           >
             <Text
@@ -138,12 +143,12 @@ export default function MainHeader() {
               borderRadius: 14,
               justifyContent: "center",
               padding: 2,
-              width: "80%",
-              gap: 3,
-              marginRight: 4,
+              
+              gap: 0,
+              marginRight: 0,
             }}
           >
-            <FontAwesome6 name="ranking-star" size={40} color="lightblue" />
+            <FontAwesome6 name="ranking-star" size={34} color="lightblue" />
             <Text
               style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}
             >

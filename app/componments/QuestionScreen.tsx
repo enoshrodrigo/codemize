@@ -9,6 +9,7 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -20,7 +21,7 @@ export default function QuestionScreen({
   selectedChoice,
   setSelectedChoice,
   disabled,
-  handleSubmit,
+ 
   timer,
 }) {
   
@@ -62,28 +63,30 @@ export default function QuestionScreen({
             height: 2,
           },
           shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-          elevation: 5,
+          shadowRadius: 3.84, 
 
-
+   elevation: 5,
           borderRadius: 8,
           padding: 0,
           marginBottom: 20,
-          alignItems: "center",
+          alignItems: "center",overflow: "hidden"
         }}
       >
         {Question && Question?.map((item, index) => (
           <React.Fragment key={index}>
             <Image
               source={{ uri: item.image }}
+
               style={{
                 width: "100%",
                 height: 230,
                 margin: 0,
                 borderRadius: 8,
                 alignSelf: "center",
-              }}
-              onLoadStart={() => ""}
+                
+              }} 
+              onLoadStart={() =>  <ActivityIndicator size="large" color="#0000ff" />}
+              onLoadEnd={() => <ActivityIndicator size="large" color="#0000ff" />}
             />
           </React.Fragment>
         ))}
@@ -99,11 +102,15 @@ export default function QuestionScreen({
               styles.choice,
                 {
                   backgroundColor:
-                    selectedChoice === idx ? "#add8e6" : "#fff",
+                   selectedChoice?.answerId === answer.answerId ? "#add8e6" : "#fff",
                 },
                 disabled && { backgroundColor: "#d3d3d3" },
               ]}
-              onPress={() => setSelectedChoice(idx)}
+              onPress={() => setSelectedChoice({
+                idx:idx,
+                questionID: choice.id,
+                answerId: answer.answerId,
+              })}
               disabled={disabled}
             >
               <Ionicons name="book" size={24} color="purple" />
@@ -115,22 +122,32 @@ export default function QuestionScreen({
       </View>
       <View style={styles.footer}>
         
-        <View
+  {/*       <Pressable
           style={{
-            marginBottom: 12,
-            backgroundColor: "lightblue",
+            marginBottom: 12, 
             borderRadius: 12,
-            padding: 8,
-            
+            padding: 8,  
+            backgroundColor: "#4682b4",   
           }}
+          disabled={disabled}
+           onPress={handleSubmit}
         >
-          <Button
-            title="Submit Answer"
-            color={"black"}
-            onPress={handleSubmit}
-            disabled={disabled}
-          />
-        </View>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              color: "white",
+              backgroundColor: "#4682b4",
+              padding: 10,
+              borderRadius: 12,
+              width: 80,
+              textAlign: "center",
+            }}
+          >
+            Submit
+          </Text>
+          
+        </Pressable> */}
       </View>
     </View>
   );
@@ -149,11 +166,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center' ,
     borderColor: "#ccc",
-    borderWidth: 0.5,
+    borderWidth:0.3,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 0.5,
+      
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -161,10 +179,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 0,
     width: screenWidth-14 ,
-    marginBottom: 20,
-    padding: 0,
-     
-    
+    marginBottom: 20, 
+    backgroundColor:'#f0f8ff',
   },
   question: {
     fontSize: 22,
@@ -172,9 +188,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: "center",
     marginTop: 20,
-    textTransform: "uppercase",
+    borderRadius: 12,
     
-   
+    textTransform: "uppercase",
   },
   choicesContainer: {
     width: "100%",
@@ -190,8 +206,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     width: "100%",
-    borderColor: "#ccc",
-    borderWidth: 0.5,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -205,7 +219,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
     fontWeight: '500',
-     
     flex: 1,
     flexWrap: "wrap", // Ensures text wraps within the box
     flexShrink: 1, // Ensures text shrinks to fit
@@ -217,6 +230,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 14,
     alignSelf: "center",
-    fontWeight: "460",
+    fontWeight: "bold",
   },
 });
