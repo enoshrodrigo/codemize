@@ -23,16 +23,18 @@ const socket = io(API_URL, {
   transports: ["websocket"],
 });
 
-const saveLocally = async (question) => {
+const saveLocally = async (question: { answerId?: any; idx?: number; questionID: any; }) => {
   try {
     let savedQuestions = await AsyncStorage.getItem("unsavedQuestions");
     savedQuestions = savedQuestions ? JSON.parse(savedQuestions) : [];
 
-    const isDuplicate = savedQuestions.some(
+    const isDuplicate = Array.isArray(savedQuestions) && savedQuestions.some(
       (q) => q.questionID === question.questionID
     );
     if (!isDuplicate) {
-      savedQuestions.push(question);
+      if (savedQuestions) {
+        Array.isArray(savedQuestions) &&  savedQuestions.push(question);
+      }
       await AsyncStorage.setItem(
         "unsavedQuestions",
         JSON.stringify(savedQuestions)
@@ -49,7 +51,7 @@ const retryUpload = async () => {
     savedQuestions = savedQuestions ? JSON.parse(savedQuestions) : [];
 
     const newSavedQuestions = [];
-
+    if (Array.isArray(savedQuestions)) {
     for (const question of savedQuestions) {
       try {
         const res = await axiosInstance.post("/api/question/save", question);
@@ -60,7 +62,7 @@ const retryUpload = async () => {
         newSavedQuestions.push(question);
       }
     }
-
+  }
     if (newSavedQuestions.length > 0) {
       await AsyncStorage.setItem(
         "unsavedQuestions",
@@ -74,7 +76,7 @@ const retryUpload = async () => {
   }
 };
 
-const saveQuestion = async (questionID, answerId, setChoiceNull) => {
+const saveQuestion = async (questionID: number, answerId: null, setChoiceNull: { (choice: any): void; (arg0: null): void; }) => {
   try {
     await axiosInstance.post("/api/question/save", {
       questionID,
@@ -105,7 +107,7 @@ export default function MultipleChoices() {
     message: "please wait...",
   });
 
-  const setStateValues = (newValues) =>
+  const setStateValues = (newValues: object) =>
     setState((prevState) => ({ ...prevState, ...newValues }));
 
   const onLoad = async () => {
@@ -137,7 +139,7 @@ export default function MultipleChoices() {
     } catch (err) {
       navigation.reset({
         index: 0,
-        routes: [{ name: "Login" }],
+        routes: [{ name: "Login" } as never],
       });
     } finally {
       setStateValues({ refreshing: false });
@@ -150,7 +152,7 @@ export default function MultipleChoices() {
     setStateValues({ refreshing: false });
   };
 
-  const intilizeData = (data) => {
+  const intilizeData = (data: any) => {
     if (data.isGameOnline) {
       setStateValues({
         isGameOnline: data.isGameOnline,
@@ -174,7 +176,7 @@ export default function MultipleChoices() {
     }
   };
 
-  const question = (e) => {
+  const question = (e: any) => {
     intilizeData(e);
   };
 
@@ -202,9 +204,9 @@ export default function MultipleChoices() {
       return () => clearTimeout(countdown);
     } else {
       saveQuestion(
-        Number(state.Question.map((item) => item.id).toString()),
+        Number(state.Question.map((item : {id:Number}) => item.id ).toString()),
         state.selectedChoice?.answerId || null,
-        (choice) => setStateValues({ selectedChoice: choice })
+        (choice: any) => setStateValues({ selectedChoice: choice })
       );
 
       if (state.selectNumber <= state.temp.length - 2) {
@@ -254,7 +256,7 @@ export default function MultipleChoices() {
               Question={state.Question}
               timer={state.timer}
               disabled={state.disabled}
-              setSelectedChoice={(choice) => setStateValues({ selectedChoice: choice })}
+              setSelectedChoice={(choice: any) => setStateValues({ selectedChoice: choice })}
               selectedChoice={state.selectedChoice}
             />
           ) : (
