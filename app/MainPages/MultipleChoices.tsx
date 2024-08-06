@@ -7,12 +7,10 @@ import {
   ActivityIndicator,
   RefreshControl,
   StyleSheet,
-  Image,
   Dimensions,
   Alert,
 } from "react-native";
 import { io } from "socket.io-client";
-import axios from "axios";
 import MainHeader from "../Headers/MainHeader";
 import { useNavigation } from "@react-navigation/native";
 import QuestionScreen from "../componments/QuestionScreen";
@@ -20,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from "lottie-react-native";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-const API_URL: string = process.env.EXPO_PUBLIC_API_URL || "";
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "";
 const socket = io(API_URL, {
   transports: ["websocket"],
 });
@@ -30,7 +28,6 @@ const saveLocally = async (question) => {
     let savedQuestions = await AsyncStorage.getItem("unsavedQuestions");
     savedQuestions = savedQuestions ? JSON.parse(savedQuestions) : [];
 
-    // Check if the question already exists in the savedQuestions array
     const isDuplicate = savedQuestions.some(
       (q) => q.questionID === question.questionID
     );
@@ -77,131 +74,117 @@ const retryUpload = async () => {
   }
 };
 
-const saveQuestion = async (questionID: number, answerId: number, setChoiseNull: React.Dispatch<React.SetStateAction<null>>) => {
- 
- // console.log("Question Saved", idx, questionID, answerId);
-  
+const saveQuestion = async (questionID, answerId, setChoiceNull) => {
+  try {
     await axiosInstance.post("/api/question/save", {
-      questionID:questionID,
-      answerId: answerId ,
-      idx: 0 ,
-    }).then((res) => {
-      if (res.status == 200) {
-       // console.log("Question Saved");
-       
-      }
-    }).catch((err) => {
-      console.log("Error while saving question", err);
-      saveLocally({ answerId, idx, questionID });
-    }
-    ).finally(() => {
-      setChoiseNull(null);
-      });
- 
+      questionID,
+      answerId,
+      idx: 0,
+    });
+  } catch (error) {
+    console.log("Error while saving question", error);
+    saveLocally({ answerId, idx: 0, questionID });
+  } finally {
+    setChoiceNull(null);
+  }
 };
 
 export default function MultipleChoices() {
   const navigation = useNavigation();
-  const [selectedChoice, setSelectedChoice] = useState({
-    idx: null,
-    questionID: null,
-    answerId: null,
+  const [state, setState] = useState({
+    selectedChoice: { idx: null, questionID: null, answerId: null },
+    timer: 0,
+    disabled: false,
+    Question: [],
+    temp: [],
+    selectNumber: 0,
+    isGameOnline: false,
+    refreshing: false,
+    loading: false,
+    tempTimer: 0,
+    message: "please wait...",
   });
-  const [timer, setTimer] = useState(0);
-  const [disabled, setDisabled] = useState(false);
-  const [Question, setQuestion] = useState([]);
-  const [temp, setTemp] = useState([]);
-  const [selectNumber, setSelectNumber] = useState(0);
-  const [isGameOnline, setIsGameOnline] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [tempTimer, setTempTimer] = useState(0);
-  const [message, setMessage] = useState("please wait...");
+
+  const setStateValues = (newValues) =>
+    setState((prevState) => ({ ...prevState, ...newValues }));
 
   const onLoad = async () => {
-   // console.log("onload", Question.length);
-
-    await axiosInstance
-      .post("/api/question/refresh")
-      .then(async(res) => {
-        setRefreshing(false);
-         
-        setIsGameOnline(res.data.isGameOnline),
-          res.data.isGameOnline
-            ? Question?.length <= 0
-              ? //c.log(Question),
-                (
-                setSelectNumber(0),
-                setQuestion(Array(res.data.question[0])),
-                setTemp(res.data.question),
-                setTimer(res.data.time ? res.data.time : 0),
-                setTempTimer(res.data.time ? res.data.time : 0))
-              : ""
-            : (setIsGameOnline(false),
-              setSelectNumber(0),
-              setTimer(0),
-              setMessage(
-                res.data.message
-                  ? res.data.message
-                  : "Games is offline,\nplease wait..."
-              ),
-              await AsyncStorage.removeItem("unsavedQuestions"),
-              setRefreshing(false),
-              setQuestion([]),
-              setTemp([]));
-      })
-      .catch((err) => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Login" }],
+    try {
+      const res = await axiosInstance.post("/api/question/refresh");
+      setStateValues({ refreshing: false });
+      if (res.data.isGameOnline) {
+        if (state.Question.length <= 0) {
+          setStateValues({
+            selectNumber: 0,
+            Question: [res.data.question[0]],
+            temp: res.data.question,
+            timer: res.data.time || 0,
+            tempTimer: res.data.time || 0,
+            isGameOnline: true,
+          });
+        }
+      } else {
+        await AsyncStorage.removeItem("unsavedQuestions");
+        setStateValues({
+          isGameOnline: false,
+          selectNumber: 0,
+          timer: 0,
+          message: res.data.message || "Games is offline,\nplease wait...",
+          Question: [],
+          temp: [],
         });
-      })
-      .finally(() => setRefreshing(false));
+      }
+    } catch (err) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } finally {
+      setStateValues({ refreshing: false });
+    }
   };
 
   const onRefresh = async () => {
-    setSelectedChoice(null);
-    setRefreshing(true);
+    setStateValues({ selectedChoice: null, refreshing: true });
     await onLoad();
-    setRefreshing(false);
+    setStateValues({ refreshing: false });
   };
 
   const intilizeData = (data) => {
-    data.isGameOnline
-      ? (
-        setIsGameOnline(data.isGameOnline),
-        setTemp(data.question),
-        setSelectNumber(0),
-        setQuestion(Array(data.question[0])),
-        setTimer(data.time ? data.time : 0),
-        setTempTimer(data.time ? data.time : 0),
-        setDisabled(false))
-      : (
-        setIsGameOnline(false),
-        setTimer(0),
-        setTempTimer(0),
-        setMessage(data.message ? data.message : "System Offline"),
-        setQuestion([]),
-        setTemp([]),
-        setSelectNumber(0));
+    if (data.isGameOnline) {
+      setStateValues({
+        isGameOnline: data.isGameOnline,
+        temp: data.question,
+        selectNumber: 0,
+        Question: [data.question[0]],
+        timer: data.time || 0,
+        tempTimer: data.time || 0,
+        disabled: false,
+      });
+    } else {
+      setStateValues({
+        isGameOnline: false,
+        timer: 0,
+        tempTimer: 0,
+        message: data.message || "System Offline",
+        Question: [],
+        temp: [],
+        selectNumber: 0,
+      });
+    }
   };
 
   const question = (e) => {
     intilizeData(e);
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     onLoad();
-    socket.on("connect", () => { 
-      onLoad();
-    });
-    socket.on("connect_error", (error) =>
-      Alert.alert("Error", "Socket Error")
-    );
-    socket.on("question", (e) => { 
-      question(e);
-    });
-    return () => { 
+    socket.on("connect", onLoad);
+    socket.on("connect_error", () => Alert.alert("Error", "Socket Error"));
+    socket.on("question", question);
+
+    return () => {
       socket.off("connect", onLoad);
       socket.off("connect_error");
       socket.off("question", question);
@@ -209,45 +192,46 @@ export default function MultipleChoices() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(retryUpload, 10000); // Retry every 10 seconds
+    const interval = setInterval(retryUpload, 10000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    //  console.log('timer',timer)
-    if (timer > 0) {
-      //console.log('timer 2nd ',timer)
-      const countdown = setTimeout(() => setTimer(timer - 1), 1000);
-     
+    if (state.timer > 0) {
+      const countdown = setTimeout(() => setStateValues({ timer: state.timer - 1 }), 1000);
       return () => clearTimeout(countdown);
-    } else { 
+    } else {
+      saveQuestion(
+        Number(state.Question.map((item) => item.id).toString()),
+        state.selectedChoice?.answerId || null,
+        (choice) => setStateValues({ selectedChoice: choice })
+      );
 
-      console.log("saveQuestbion", timer);
-    
-        saveQuestion( Number( Question?.map((item) => item.id).toString()), selectedChoice?.answerId?selectedChoice.answerId:null,setSelectedChoice);
-           
-        console.log("saveQuestbion", Question);
-      
-      if (selectNumber <= temp.length - 2) {
-        setDisabled(false);
-        setQuestion(Array(temp[selectNumber + 1]));
-        setSelectNumber(selectNumber + 1);
-        setTimer(tempTimer);
+      if (state.selectNumber <= state.temp.length - 2) {
+        setStateValues({
+          disabled: false,
+          Question: [state.temp[state.selectNumber + 1]],
+          selectNumber: state.selectNumber + 1,
+          timer: state.tempTimer,
+        });
       }
-      if (selectNumber == temp.length - 1) {
-        setIsGameOnline(false);
-        setMessage("Game Ended");
-        setTimer(0);
-        setQuestion([]);
-        setTemp([]);
-        setSelectNumber(0);
+
+      if (state.selectNumber === state.temp.length - 1) {
+        setStateValues({
+          isGameOnline: false,
+          message: "Game Ended",
+          timer: 0,
+          Question: [],
+          temp: [],
+          selectNumber: 0,
+        });
       }
     }
-  }, [timer]);
+  }, [state.timer]);
 
   return (
     <>
-      {loading ? (
+      {state.loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#007BFF" />
         </View>
@@ -256,7 +240,7 @@ export default function MultipleChoices() {
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
-              refreshing={refreshing}
+              refreshing={state.refreshing}
               onRefresh={onRefresh}
               title="Reseting Selection..."
               titleColor="blue"
@@ -265,20 +249,16 @@ export default function MultipleChoices() {
             />
           }
         >
-          {isGameOnline ? (
+          {state.isGameOnline ? (
             <QuestionScreen
-              Question={Question}
-              timer={timer}
-              disabled={disabled}
-              setSelectedChoice={setSelectedChoice}
-              /*   handleSubmit={handleSubmit} */
-              selectedChoice={selectedChoice}
+              Question={state.Question}
+              timer={state.timer}
+              disabled={state.disabled}
+              setSelectedChoice={(choice) => setStateValues({ selectedChoice: choice })}
+              selectedChoice={state.selectedChoice}
             />
           ) : (
-            <View style={{}}>
-              {
-                // <Image source={{ uri: 'https://cdn.pixabay.com/animation/2022/07/29/03/42/03-42-02-615_512.gif' }}  style={styles.noGameImage} />
-              }
+            <View>
               <LottieView
                 source={require("./rocketroof.json")}
                 autoPlay
@@ -286,7 +266,7 @@ export default function MultipleChoices() {
                 speed={1}
                 style={styles.animation}
               />
-              <Text style={styles.noGameText}>{message}</Text>
+              <Text style={styles.noGameText}>{state.message}</Text>
             </View>
           )}
         </ScrollView>
@@ -303,27 +283,14 @@ const styles = StyleSheet.create({
   },
   animation: {
     alignSelf: "center",
-    width: screenWidth - 0,
-    height: screenWidth - 1,
-  },
-  noGameContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: screenWidth - 2,
-    height: screenWidth - 12,
-  },
-  noGameImage: {
-    width: screenWidth - 2,
-    height: screenHeight - 2,
-    resizeMode: "cover",
+    width: screenWidth,
+    height: screenWidth,
   },
   noGameText: {
     fontSize: 20,
     fontWeight: "bold",
     color: "red",
     textAlign: "center",
-    flexWrap: "wrap",
     alignSelf: "center",
   },
 });
