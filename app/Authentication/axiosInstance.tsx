@@ -12,7 +12,8 @@ const axiosInstance = axios.create({
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
     async (config) => {
-        const token = await AsyncStorage.getItem('token'); // Get token from AsyncStorage
+        const token = await AsyncStorage.getItem('token');  
+        // Get token from AsyncStorage
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
