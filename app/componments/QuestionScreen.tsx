@@ -16,14 +16,21 @@ import { Ionicons } from "@expo/vector-icons";
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
+interface QuestionScreenProps {
+  Question: { question: string; image: string; answer: { answerId: string; option: string }[]; id: string }[];
+  selectedChoice: { idx: number; questionID: string; answerId: string } | null;
+  setSelectedChoice: (choice: { idx: number; questionID: string; answerId: string }) => void;
+  disabled: boolean;
+  timer: number;
+}
+
 export default function QuestionScreen({
   Question,
   selectedChoice,
   setSelectedChoice,
   disabled,
- 
   timer,
-}) {
+}: QuestionScreenProps) {
   
 
   return (
