@@ -1,0 +1,57 @@
+import serial
+import requests
+import pygame
+from time import sleep
+
+processed_buzzers = set()
+background_music_playing = True
+
+
+def read_buzzer(port):
+    global background_music_playing
+    ser = serial.Serial(port, 9600)
+    pygame.mixer.init()
+    pygame.mixer.music.load('backgroundbuzz.mp3')
+    pygame.mixer.music.play(-1)  # Play background music in a loop
+    buzzer_sound = pygame.mixer.Sound('buzzer.mp3')
+    while True:
+        if ser.in_waiting > 0:
+            data = ser.readline().decode('utf-8').strip()
+            if data == "reset":
+                reset_buzzer_clicks()
+                pygame.mixer.music.set_volume(1.0)
+            elif "buzz" in data:
+                buzzer_id = data.split()[1]
+                if buzzer_id not in processed_buzzers:
+                    send_to_server(buzzer_id)
+                    buzzer_sound.play()
+                    processed_buzzers.add(buzzer_id)
+                    if background_music_playing:
+                        pygame.mixer.music.set_volume(0.4)
+
+
+def send_to_server(buzzer_id):
+    url = f"http://localhost:5000/api/buzzer/click"
+    params = {"buzzerId": buzzer_id}
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        print("Successfully sent buzzer ID to server", buzzer_id)
+    else:
+        print("Failed to send buzzer ID to server", response.status_code)
+
+
+def reset_buzzer_clicks():
+    global processed_buzzers
+    url = f"http://localhost:5000/api/buzzer/reset"
+    response = requests.get(url)
+    if response.status_code == 200:
+        processed_buzzers.clear()
+        print("Successfully reset buzzer clicks")
+    else:
+        print("Failed to reset buzzer clicks", response.status_code)
+
+
+if __name__ == "__main__":
+    port = "COM5"
+    read_buzzer(port)
+

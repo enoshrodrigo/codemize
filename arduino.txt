@@ -1,0 +1,64 @@
+const int numBuzzers = 10;
+const int buzzerPins[numBuzzers] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11};  // Buzzer pins D2 to D11
+const int ledPins[numBuzzers] = {13, A0, A1, A2, A3, A4, A5};  // LED pins D13 to D1
+const int resetButtonPin = 12;  // Reset button pin
+int buzzerStates[numBuzzers] = {HIGH};  // Initialize buzzer states to HIGH (not pressed)
+unsigned long lastDebounceTime[numBuzzers] = {0};  // Timestamp for debounce
+const unsigned long debounceDelay = 50;  // Debounce time in milliseconds
+bool blinking = true;  // Flag to control LED blinking
+unsigned long lastBlinkTime = 0;
+const unsigned long blinkInterval = 100;  // Blink interval in milliseconds
+
+void setup() {
+  Serial.begin(9600);
+  for (int i = 0; i < numBuzzers; i++) {
+    pinMode(buzzerPins[i], INPUT_PULLUP);  // Set each buzzer pin as input with internal pull-up resistor
+    pinMode(ledPins[i], OUTPUT);  // Set each LED pin as output
+  }
+  pinMode(resetButtonPin, INPUT_PULLUP);  // Set reset button pin as input with internal pull-up resistor
+}
+
+void loop() {
+  unsigned long currentTime = millis();
+  
+  if (blinking) {
+    if (currentTime - lastBlinkTime > blinkInterval) {
+      lastBlinkTime = currentTime;
+      for (int i = 0; i < numBuzzers; i++) {
+        digitalWrite(ledPins[i], !digitalRead(ledPins[i]));  // Toggle LED state
+      }
+    }
+  } else {
+    for (int i = 0; i < numBuzzers; i++) {
+      digitalWrite(ledPins[i], HIGH);  // Turn off all LEDs
+    }
+  }
+
+  for (int i = 0; i < numBuzzers; i++) {
+    int reading = digitalRead(buzzerPins[i]);
+    
+    if (reading != buzzerStates[i]) {
+      lastDebounceTime[i] = currentTime;  // Update debounce time
+      buzzerStates[i] = reading;  // Update the state
+    }
+    
+    if ((currentTime - lastDebounceTime[i]) > debounceDelay) {
+      if (buzzerStates[i] == LOW) {  // If button is pressed
+        Serial.print("buzz ");
+        Serial.println(i + 1);  // Identify which buzzer was pressed
+        blinking = false;  // Stop blinking when any buzzer is pressed
+      }
+    }
+  }
+
+  int resetButtonState = digitalRead(resetButtonPin);
+  if (resetButtonState == LOW && !blinking) {  // Reset button pressed and blinking is false
+    blinking = true;  // Restart blinking
+    // Send reset signal to Python
+    Serial.println("reset");
+    // Optionally reset buzzer states to HIGH if needed
+    for (int i = 0; i < numBuzzers; i++) {
+      buzzerStates[i] = HIGH;  // Reset buzzer states
+    }
+  }
+}
