@@ -44,7 +44,7 @@ const buzzerReset = async(req,res)=>{
       err?console.log('err'):''  
       if(result[0].is_online == 1){
         db.query('TRUNCATE TABLE buzzer',async(err,res)=>{
-          err?console.log('err'):''
+        //  err?console.log('err'):''
             if(res){
              console.log('table truncated')
            
